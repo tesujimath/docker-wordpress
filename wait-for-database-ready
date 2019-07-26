@@ -1,0 +1,38 @@
+#!/usr/local/bin/php
+<?php
+// wait for database to be available
+
+$stderr = fopen('php://stderr', 'w');
+fwrite($stderr, "\nWaiting for database\n");
+
+// https://codex.wordpress.org/Editing_wp-config.php#MySQL_Alternate_Port
+//   "hostname:port"
+// https://codex.wordpress.org/Editing_wp-config.php#MySQL_Sockets_or_Pipes
+//   "hostname:unix-socket-path"
+list($host, $socket) = explode(':', getenv('DB_HOST'), 2);
+$port = 0;
+if (is_numeric($socket)) {
+        $port = (int) $socket;
+        $socket = null;
+}
+$user = getenv('DB_USER');
+$pass = getenv('DB_PASSWORD');
+$dbName = getenv('DB_NAME');
+
+$maxTries = 20;
+$wait = 5;
+do {
+        $mysql = new mysqli($host, $user, $pass, '', $port, $socket);
+        if ($mysql->connect_error) {
+                fwrite($stderr, "\n" . 'MySQL Connection Error: (' . $mysql->connect_errno . ') ' . $mysql->connect_error . ", waiting ...\n");
+                --$maxTries;
+                if ($maxTries <= 0) {
+                        exit(1);
+                }
+                sleep($wait);
+        } else {
+                fwrite($stderr, "\nDatabase ready\n");
+        }
+} while ($mysql->connect_error);
+
+$mysql->close();
