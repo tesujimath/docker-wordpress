@@ -1,4 +1,9 @@
-Another WordPress container, which downloads and installs WordPress when the container is started.
+A WordPress container, which downloads and installs WordPress when the container
+is started.  It is based on my
+[wordpress-husk](https://github.com/tesujimath/docker-wordpress-husk) image,
+which itself borrows heavily from the
+[official docker WordPress images](https://github.com/docker-library/wordpress),
+and which I'm hoping will be superseded by something from that project.
 
 When this container is started for the first time, it performs the following steps:
 
