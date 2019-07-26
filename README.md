@@ -60,3 +60,22 @@ The core WordPress directory is `/var/www/html/wordpress`.
 
 The WordPress configuration should be mounted into the container at
 `/var/www/html/wp-config.php`.
+
+## Recommended WordPress configuration
+
+This author recommends using `/content` as the content directory.  The following
+configuration is suggested in `wp-config.php`:
+
+```
+/** Absolute path to the WordPress directory. */
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', dirname( __FILE__ ) . '/wordpress/' );
+}
+
+/** Relocate content directory from /wordpress/wp-content to /content. */
+define( 'WP_CONTENT_URL', '/content' );
+define( 'WP_CONTENT_DIR', dirname( __FILE__ ) . '/content' );
+
+/** Sets up WordPress vars and included files. */
+require_once( ABSPATH . 'wp-settings.php' );
+```
