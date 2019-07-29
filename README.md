@@ -13,6 +13,7 @@ When this container is started for the first time, it performs the following ste
 4. use WP-CLI to install the WordPress
 5. install and activate the WordPress theme
 6. install and activate WordPress plugins, both from the main repo and local zipfiles
+7. set options from all files found in an options directory
 
 When the container is subsequently started, these steps all detect that nothing
 is required to be done.
@@ -55,6 +56,15 @@ Plugin installation and activation  requires the following:
 | `WORDPRESS_PLUGINS`     | Space-separated list of plugins to install and activate         |
 | `WORDPRESS_PLUGINS_DIR` | Directory of additional zipfile plugins to install and activate |
 
+
+Option setting requires the following:
+
+| Variable                | Description                       |
+|-------------------------|-----------------------------------|
+| `WORDPRESS_OPTIONS_DIR` | Directory containing option files |
+
+The option file syntax is line oriented, `name=value`, where value may not
+contain a double quote (use `&#34`; instead).
 
 Additionally, the following environment variables are required explicitly, and
 separately from `wp-config.php`, so that the `wait-for-database-ready` script

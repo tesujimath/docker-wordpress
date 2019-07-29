@@ -33,16 +33,7 @@ wait-for-database-ready
 # Use WP-CLI to install WordPress itself
 su -s /bin/sh -c "wp core install --path=/var/www/html/wordpress --url=\"${WORDPRESS_URL}\" --title=\"${WORDPRESS_TITLE}\" --admin_user=\"${WORDPRESS_ADMIN_USER}\" --admin_password=\"${WORDPRESS_ADMIN_PASSWORD}\" --admin_email=\"${WORDPRESS_ADMIN_EMAIL}\"" www-data
 
-# Use WP-CLI to install and activate the desired theme
-su -s /bin/sh -c "wp theme install --path=/var/www/html/wordpress --activate \"${WORDPRESS_THEME}\"" www-data
-
-# Use WP-CLI to install and activate required plugins
-test -n "$WORDPRESS_PLUGINS" && for plugin in $WORDPRESS_PLUGINS; do
-    su -s /bin/sh -c "wp plugin install --path=/var/www/html/wordpress --activate $plugin" www-data
-done
-# and local plugins from zipfiles
-test -d "$WORDPRESS_PLUGINS_DIR" && for plugin in `ls $WORDPRESS_PLUGINS_DIR`; do
-    su -s /bin/sh -c "wp plugin install --path=/var/www/html/wordpress --activate $WORDPRESS_PLUGINS_DIR/$plugin" www-data
-done
+# setup theme, plugins, options, etc.
+su -s /bin/sh -c wp-post-install-setup www-data
 
 exec "$@"

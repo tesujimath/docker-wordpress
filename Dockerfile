@@ -7,7 +7,7 @@ LABEL WORDPRESS_HUSK_RELEASE="$WORDPRESS_HUSK_RELEASE"
 
 RUN apk add --no-cache curl git rsync
 
-COPY docker-entrypoint.sh wait-for-database-ready /usr/local/bin/
+COPY docker-entrypoint.sh wait-for-database-ready wp-post-install-setup /usr/local/bin/
 RUN chmod 0755 /usr/local/bin/*
 
 ENTRYPOINT ["docker-entrypoint.sh"]

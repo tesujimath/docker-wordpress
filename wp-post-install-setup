@@ -1,0 +1,60 @@
+#!/bin/sh
+#
+# post installation setup of WordPress theme, plugins and options, idempotently
+
+test "`id -un`" == www-data || {
+    echo >&2 "`basename $0`: must run as www-data - abort"
+    exit 1
+}
+
+# any error is fatal
+set -e
+
+#
+# THEME
+#
+
+# install and activate the desired theme, if any
+test -n "$WORDPRESS_THEME" && wp theme install --path=/var/www/html/wordpress --activate "$WORDPRESS_THEME"
+
+#
+# PLUGINS
+#
+
+# determine what plugins are already installed
+plugins="/tmp/plugins$$"
+trap "rm -f $plugins" EXIT
+wp plugin list --path=/var/www/html/wordpress --field=name >$plugins
+
+# install and activate required plugins, if any
+test -n "$WORDPRESS_PLUGINS" && for plugin in $WORDPRESS_PLUGINS; do
+    if grep "^$plugin\$" $plugins >/dev/null; then
+        echo >&2 "skipping installed plugin $plugin"
+    else
+        wp plugin install --path=/var/www/html/wordpress --activate $plugin
+    fi
+done
+
+# local plugins from zipfiles
+test -d "$WORDPRESS_PLUGINS_DIR" && for zipfile in `cd $WORDPRESS_PLUGINS_DIR; ls *.zip`; do
+    # assume plugin name is zipfile name without version and .zip extension
+    plugin=`echo $zipfile | sed -e 's/-[0-9.]*.zip'//`
+    if grep "^$plugin\$" $plugins >/dev/null; then
+        echo >&2 "skipping installed plugin $plugin"
+    else
+        wp plugin install --path=/var/www/html/wordpress --activate $WORDPRESS_PLUGINS_DIR/$zipfile
+    fi
+done
+
+#
+# OPTIONS
+#
+
+# set required options, if any
+# option values may not contain double quote character, use &#34; instead
+test -d "$WORDPRESS_OPTIONS_DIR" && for options_file in `ls -d $WORDPRESS_OPTIONS_DIR/*`; do
+    exec <$options_file
+    while IFS='=' read name value; do
+        wp option update --path=/var/www/html/wordpress "$name" "$value"
+    done
+done
