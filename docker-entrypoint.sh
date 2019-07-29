@@ -36,4 +36,13 @@ su -s /bin/sh -c "wp core install --path=/var/www/html/wordpress --url=\"${WORDP
 # Use WP-CLI to install and activate the desired theme
 su -s /bin/sh -c "wp theme install --path=/var/www/html/wordpress --activate \"${WORDPRESS_THEME}\"" www-data
 
+# Use WP-CLI to install and activate required plugins
+test -n "$WORDPRESS_PLUGINS" && for plugin in $WORDPRESS_PLUGINS; do
+    su -s /bin/sh -c "wp plugin install --path=/var/www/html/wordpress --activate $plugin" www-data
+done
+# and local plugins from zipfiles
+test -d "$WORDPRESS_PLUGINS_DIR" && for plugin in `ls $WORDPRESS_PLUGINS_DIR`; do
+    su -s /bin/sh -c "wp plugin install --path=/var/www/html/wordpress --activate $WORDPRESS_PLUGINS_DIR/$plugin" www-data
+done
+
 exec "$@"

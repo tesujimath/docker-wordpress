@@ -12,6 +12,7 @@ When this container is started for the first time, it performs the following ste
 3. wait for the MySQL database to be ready
 4. use WP-CLI to install the WordPress
 5. install and activate the WordPress theme
+6. install and activate WordPress plugins, both from the main repo and local zipfiles
 
 When the container is subsequently started, these steps all detect that nothing
 is required to be done.
@@ -46,6 +47,14 @@ The theme installation and activation requires the following:
 | Variable          | Description                              |
 |-------------------|------------------------------------------|
 | `WORDPRESS_THEME` | Theme name, passed to `wp theme install` |
+
+Plugin installation and activation  requires the following:
+
+| Variable                | Description                                                     |
+|-------------------------|-----------------------------------------------------------------|
+| `WORDPRESS_PLUGINS`     | Space-separated list of plugins to install and activate         |
+| `WORDPRESS_PLUGINS_DIR` | Directory of additional zipfile plugins to install and activate |
+
 
 Additionally, the following environment variables are required explicitly, and
 separately from `wp-config.php`, so that the `wait-for-database-ready` script
