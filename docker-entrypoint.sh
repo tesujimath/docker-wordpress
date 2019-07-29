@@ -19,19 +19,10 @@ else
     chown -R www-data:www-data /var/www/html
 fi
 
-# Install latest version of WP-CLI, only if we don't already have it.
-# Upgrades are handled by `wp cli update`.
-if test -f /usr/local/bin/wp; then
-    echo >&2 "WP-CLI already downloaded"
-else
-    curl https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /usr/local/bin/wp
-    chmod 755 /usr/local/bin/wp
-fi
-
 wait-for-database-ready
 
-# Use WP-CLI to install WordPress itself
-su -s /bin/sh -c "wp core install --path=/var/www/html/wordpress --url=\"${WORDPRESS_URL}\" --title=\"${WORDPRESS_TITLE}\" --admin_user=\"${WORDPRESS_ADMIN_USER}\" --admin_password=\"${WORDPRESS_ADMIN_PASSWORD}\" --admin_email=\"${WORDPRESS_ADMIN_EMAIL}\"" www-data
+# Use WP-CLI to install WordPress itself, if required
+su -s /bin/sh -c "wp --path=/var/www/html/wordpress core is-installed || wp --path=/var/www/html/wordpress core install --url=\"${WORDPRESS_URL}\" --title=\"${WORDPRESS_TITLE}\" --admin_user=\"${WORDPRESS_ADMIN_USER}\" --admin_password=\"${WORDPRESS_ADMIN_PASSWORD}\" --admin_email=\"${WORDPRESS_ADMIN_EMAIL}\"" www-data
 
 # setup theme, plugins, options, etc.
 su -s /bin/sh -c wp-post-install-setup www-data

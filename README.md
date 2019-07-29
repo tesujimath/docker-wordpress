@@ -8,12 +8,11 @@ and which I'm hoping will be superseded by something from that project.
 When this container is started for the first time, it performs the following steps:
 
 1. download and unpack WordPress
-2. download and install WP-CLI
-3. wait for the MySQL database to be ready
-4. use WP-CLI to install the WordPress
-5. install and activate the WordPress theme
-6. install and activate WordPress plugins, both from the main repo and local zipfiles
-7. set options from all files found in an options directory
+2. wait for the MySQL database to be ready
+3. use WP-CLI to install the WordPress
+4. install and activate the WordPress theme
+5. install and activate WordPress plugins, both from the main repo and local zipfiles
+6. set options from all files found in an options directory
 
 When the container is subsequently started, these steps all detect that nothing
 is required to be done.
