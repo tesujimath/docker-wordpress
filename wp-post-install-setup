@@ -15,7 +15,7 @@ set -e
 #
 
 # install and activate the desired theme, if any
-test -n "$WORDPRESS_THEME" && wp theme install --path=/var/www/html/wordpress --activate "$WORDPRESS_THEME"
+test -n "$WORDPRESS_THEME" && wp --path=/var/www/html/wordpress theme install --activate "$WORDPRESS_THEME"
 
 #
 # PLUGINS
@@ -24,14 +24,14 @@ test -n "$WORDPRESS_THEME" && wp theme install --path=/var/www/html/wordpress --
 # determine what plugins are already installed
 plugins="/tmp/plugins$$"
 trap "rm -f $plugins" EXIT
-wp plugin list --path=/var/www/html/wordpress --field=name >$plugins
+wp --path=/var/www/html/wordpress plugin list --field=name >$plugins
 
 # install and activate required plugins, if any
 test -n "$WORDPRESS_PLUGINS" && for plugin in $WORDPRESS_PLUGINS; do
     if grep "^$plugin\$" $plugins >/dev/null; then
         echo >&2 "skipping installed plugin $plugin"
     else
-        wp plugin install --path=/var/www/html/wordpress --activate $plugin
+        wp --path=/var/www/html/wordpress plugin install --activate $plugin
     fi
 done
 
@@ -42,7 +42,7 @@ test -d "$WORDPRESS_PLUGINS_DIR" && for zipfile in `cd $WORDPRESS_PLUGINS_DIR; l
     if grep "^$plugin\$" $plugins >/dev/null; then
         echo >&2 "skipping installed plugin $plugin"
     else
-        wp plugin install --path=/var/www/html/wordpress --activate $WORDPRESS_PLUGINS_DIR/$zipfile
+        wp --path=/var/www/html/wordpress plugin install --activate $WORDPRESS_PLUGINS_DIR/$zipfile
     fi
 done
 
@@ -55,6 +55,6 @@ done
 test -d "$WORDPRESS_OPTIONS_DIR" && for options_file in `ls -d $WORDPRESS_OPTIONS_DIR/*`; do
     exec <$options_file
     while IFS='=' read name value; do
-        wp option update --path=/var/www/html/wordpress "$name" "$value"
+        wp --path=/var/www/html/wordpress option update "$name" "$value"
     done
 done
