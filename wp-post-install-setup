@@ -10,40 +10,43 @@ test "`id -un`" == www-data || {
 # any error is fatal
 set -e
 
+# run wp with particular path
+wpp() {
+    wp --path=/var/www/html/wordpress "$@"
+}
+
 #
 # THEME
 #
 
 # install and activate the desired theme, if any
-test -n "$WORDPRESS_THEME" && wp --path=/var/www/html/wordpress theme install --activate "$WORDPRESS_THEME"
+test -n "$WORDPRESS_THEME" && {
+    wpp theme is-installed "$WORDPRESS_THEME" || \
+        wpp theme install "$WORDPRESS_THEME" && \
+    wpp theme is-active "$WORDPRESS_THEME" || \
+        wpp theme activate "$WORDPRESS_THEME"
+}
 
 #
 # PLUGINS
 #
 
-# determine what plugins are already installed
-plugins="/tmp/plugins$$"
-trap "rm -f $plugins" EXIT
-wp --path=/var/www/html/wordpress plugin list --field=name >$plugins
-
 # install and activate required plugins, if any
 test -n "$WORDPRESS_PLUGINS" && for plugin in $WORDPRESS_PLUGINS; do
-    if grep "^$plugin\$" $plugins >/dev/null; then
-        echo >&2 "skipping installed plugin $plugin"
-    else
-        wp --path=/var/www/html/wordpress plugin install --activate $plugin
-    fi
+    wpp plugin is-installed $plugin || \
+        wpp plugin install $plugin && \
+    wpp plugin is-active $plugin || \
+        wpp plugin activate $plugin
 done
 
 # local plugins from zipfiles
 test -d "$WORDPRESS_PLUGINS_DIR" && for zipfile in `cd $WORDPRESS_PLUGINS_DIR; ls *.zip`; do
     # assume plugin name is zipfile name without version and .zip extension
     plugin=`echo $zipfile | sed -e 's/-[0-9.]*.zip'//`
-    if grep "^$plugin\$" $plugins >/dev/null; then
-        echo >&2 "skipping installed plugin $plugin"
-    else
-        wp --path=/var/www/html/wordpress plugin install --activate $WORDPRESS_PLUGINS_DIR/$zipfile
-    fi
+    wpp plugin is-installed $plugin || \
+        wpp plugin install $WORDPRESS_PLUGINS_DIR/$zipfile && \
+    wpp plugin is-active $plugin || \
+        wpp plugin activate $plugin
 done
 
 #
@@ -55,6 +58,6 @@ done
 test -d "$WORDPRESS_OPTIONS_DIR" && for options_file in `ls -d $WORDPRESS_OPTIONS_DIR/*`; do
     exec <$options_file
     while IFS='=' read name value; do
-        wp --path=/var/www/html/wordpress option update "$name" "$value"
+        wpp option update "$name" "$value"
     done
 done
