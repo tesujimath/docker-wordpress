@@ -58,6 +58,12 @@ done
 test -d "$WORDPRESS_OPTIONS_DIR" && for options_file in `ls -d $WORDPRESS_OPTIONS_DIR/*`; do
     exec <$options_file
     while IFS='=' read name value; do
-        wpp option update "$name" "$value"
+        case "$name" in
+            \#*) # ignore comment
+                ;;
+            *)
+                wpp option update "$name" "$value"
+                ;;
+        esac
     done
 done

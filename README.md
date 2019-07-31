@@ -63,7 +63,8 @@ Option setting requires the following:
 | `WORDPRESS_OPTIONS_DIR` | Directory containing option files |
 
 The option file syntax is line oriented, `name=value`, where value may not
-contain a double quote (use `&#34`; instead).
+contain a double quote (use `&#34`; instead).  Any line starting with a hash is
+ignored.
 
 Additionally, the following environment variables are required explicitly, and
 separately from `wp-config.php`, so that the `wait-for-database-ready` script
