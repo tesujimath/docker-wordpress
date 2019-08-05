@@ -20,7 +20,9 @@ is required to be done.
 ## Usage
 
 The WordPress configuration must be mounted into the container explicitly.  See
-the directory structure (below).
+the directory structure (below).  The main WordPress sub-directory of
+`/var/www/html` is `${WORDPRESS_CORE}`, which must not have a leading nor
+trailing slash.
 
 Additionally, the following environment variables are required to be defined.
 
@@ -80,23 +82,23 @@ can connect.  They format is as in `wp-config.php`
 
 ## Directory Structure
 
-The core WordPress directory is `/var/www/html/wordpress`.
+The core WordPress directory is `/var/www/html/${WORDPRESS_CORE}`.
 
 The WordPress configuration should be mounted into the container at
 `/var/www/html/wp-config.php`.
 
 ## Recommended WordPress configuration
 
-This author recommends using `/content` as the content directory.  The following
-configuration is suggested in `wp-config.php`:
+This author suggests using something like `/content` as the content directory,
+for which the following configuration is required in `wp-config.php`:
 
 ```
-/** Absolute path to the WordPress directory. */
+/** Absolute path to the WordPress directory, to match ${WORDPRESS_CORE}. */
 if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', dirname( __FILE__ ) . '/wordpress/' );
 }
 
-/** Relocate content directory from /wordpress/wp-content to /content. */
+/** Relocate content directory from to /content. */
 define( 'WP_CONTENT_URL', '/content' );
 define( 'WP_CONTENT_DIR', dirname( __FILE__ ) . '/content' );
 

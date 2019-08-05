@@ -12,7 +12,7 @@ set -e
 
 # run wp with particular path
 wpp() {
-    wp --path=/var/www/html/wordpress "$@"
+    wp --path=/var/www/html/${WORDPRESS_CORE} "$@"
 }
 
 #
