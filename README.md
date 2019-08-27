@@ -5,6 +5,9 @@ which itself borrows heavily from the
 [official docker WordPress images](https://github.com/docker-library/wordpress),
 and which I'm hoping will be superseded by something from that project.
 
+It also supports sending email, using msmtp.  Simply mount your `msmtprc` into
+the container at `/etc/msmtprc`.
+
 When this container is started for the first time, it performs the following steps:
 
 1. download and unpack WordPress

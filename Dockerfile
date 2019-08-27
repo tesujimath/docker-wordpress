@@ -5,7 +5,8 @@ ARG WORDPRESS_HUSK_RELEASE
 LABEL maintainer "Simon Guest <simon.guest@tesujimath.org>"
 LABEL WORDPRESS_HUSK_RELEASE="$WORDPRESS_HUSK_RELEASE"
 
-RUN apk add --no-cache curl git rsync
+RUN apk add --no-cache curl git rsync msmtp && \
+    ln -sf /usr/bin/msmtp /usr/sbin/sendmail
 
 COPY docker-entrypoint.sh wait-for-database-ready wp-post-install-setup /usr/local/bin/
 
